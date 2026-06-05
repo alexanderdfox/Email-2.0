@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AegisMail // Post-Quantum Decentralized Secure Comms</title>
+    <style>
+        :root {
+            --bg-black: #0A0A0A;
+            --cyber-blue: #00D4FF;
+            --neon-green: #00FF88;
+            --security-red: #FF4D4D;
+            --graphite: #1E1E1E;
+            --panel-bg: rgba(30, 30, 30, 0.65);
+            --border-glass: rgba(0, 212, 255, 0.15);
+            --font-mono: 'Courier New', Courier, monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-black);
+            color: #E0E0E0;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Technical Grid Overlay Background */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        header {
+            z-index: 10;
+            background: rgba(10, 10, 10, 0.85);
+            border-bottom: 1px solid var(--cyber-blue);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 24px;
+            height: 24px;
+            fill: var(--cyber-blue);
+            filter: drop-shadow(0 0 8px var(--cyber-blue));
+        }
+
+        .logo-text {
+            font-family: var(--font-mono);
+            font-weight: bold;
+            font-size: 1.3rem;
+            letter-spacing: 2px;
+            color: #FFF;
+        }
+
+        .logo-text span {
+            color: var(--cyber-blue);
+        }
+
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--neon-green);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--neon-green);
+            animation: pulse 1.8s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.9); opacity: 0.6; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(0.9); opacity: 0.6; }
+        }
+
+        .app-container {
+            display: flex;
+            flex: 1;
+            z-index: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        nav {
+            width: 260px;
+            background: rgba(15, 15, 15, 0.8);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .btn-compose {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 255, 136, 0.2));
+            border: 1px solid var(--cyber-blue);
+            color: #FFF;
+            padding: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: var(--font-mono);
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 5px var(--cyber-blue);
+        }
+
+        .btn-compose:hover {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.4), rgba(0, 255, 136, 0.4));
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            color: #A0A0A0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(0, 212, 255, 0.08);
+            color: var(--cyber-blue);
+            border-left: 3px solid var(--cyber-blue);
+        }
+
+        .nav-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-icon {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        .nav-badge {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            background: rgba(0, 212, 255, 0.15);
+            padding: 2px 6px;
+            border-radius: 10px;
+            color: var(--cyber-blue);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            background: rgba(10, 10, 10, 0.4);
+            backdrop-filter: blur(4px);
+            overflow: hidden;
+        }
+
+        .view-panel {
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        .view-panel.active {
+            display: flex;
+        }
+
+        /* Dashboard Split Layout */
+        .split-layout {
+            width: 100%;
+            height: 100%;
+            display: flex;
+        }
+
+        .list-pane {
+            width: 380px;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            background: rgba(15, 15, 15, 0.5);
+        }
+
+        .pane-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-family: var(--font-mono);
+            font-size: 1.1rem;
+            color: #FFF;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-box {
+            padding: 10px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .search-box input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 12px;
+            border-radius: 4px;
+            color: #FFF;
+            font-size: 0.85rem;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--cyber-blue);
+        }
+
+        .item-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .mail-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .mail-item:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .mail-item.selected {
+            background: rgba(0, 212, 255, 0.04);
+            border-left: 2px solid var(--cyber-blue);
+        }
+
+        .mail-top {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .mail-sender {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #FFF;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 70%;
+        }
+
+        .mail-time {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        .mail-subject {
+            font-size: 0.85rem;
+            color: var(--cyber-blue);
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .mail-preview {
+            font-size: 0.8rem;
+            color: #888;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .security-badge-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .content-pane {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: rgba(10, 10, 10, 0.2);
+            overflow-y: auto;
+        }
+
+        .content-header {
+            padding: 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(20, 20, 20, 0.4);
+        }
+
+        .message-title {
+            font-size: 1.4rem;
+            color: #FFF;
+            margin-bottom: 12px;
+        }
+
+        .meta-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 8px 15px;
+            font-size: 0.85rem;
+        }
+
+        .meta-label {
+            color: #666;
+            font-family: var(--font-mono);
+        }
+
+        .meta-value {
+            color: #AAA;
+        }
+
+        .crypto-analysis-card {
+            margin-top: 15px;
+            background: rgba(0, 255, 136, 0.03);
+            border: 1px solid rgba(0, 255, 136, 0.15);
+            border-radius: 4px;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .crypto-info-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .crypto-status-text {
+            font-size: 0.85rem;
+            color: var(--neon-green);
+            font-family: var(--font-mono);
+        }
+
+        .crypto-tech-stack {
+            font-size: 0.75rem;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        .message-body {
+            padding: 30px;
+            color: #D5D5D5;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            flex: 1;
+            white-space: pre-wrap;
+        }
+
+        /* Compose View / Modal Structure */
+        .compose-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 30px;
+            background: rgba(12, 12, 12, 0.95);
+        }
+
+        .compose-header {
+            font-family: var(--font-mono);
+            color: #FFF;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--cyber-blue);
+        }
+
+        .form-group input, .form-group textarea {
+            background: rgba(30, 30, 30, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            padding: 10px;
+            color: #FFF;
+            font-size: 0.9rem;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--cyber-blue);
+            box-shadow: 0 0 8px rgba(0, 212, 255, 0.2);
+        }
+
+        .compose-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn-action {
+            padding: 10px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--cyber-blue);
+            border: 1px solid var(--cyber-blue);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 15px var(--cyber-blue);
+            background: #00bfe6;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #FFF;
+        }
+
+        /* Diagnostic / Network Dashboard Dashboard elements */
+        .grid-dashboard {
+            width: 100%;
+            height: 100%;
+            padding: 30px;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .dashboard-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-glass);
+            border-radius: 6px;
+            padding: 20px;
+            backdrop-filter: blur(12px);
+        }
+
+        .card-title {
+            font-family: var(--font-mono);
+            color: #FFF;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--cyber-blue);
+            font-family: var(--font-mono);
+            margin-bottom: 5px;
+        }
+
+        .metric-sub {
+            font-size: 0.75rem;
+            color: #777;
+        }
+
+        .log-terminal {
+            background: #050505;
+            border: 1px solid #1A1A1A;
+            border-radius: 4px;
+            padding: 12px;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: #888;
+            height: 160px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            margin-bottom: 4px;
+            line-height: 1.4;
+        }
+
+        .log-entry.info { color: var(--cyber-blue); }
+        .log-entry.success { color: var(--neon-green); }
+        .log-entry.warn { color: var(--security-red); }
+
+        /* Security Configuration Form Layout */
+        .security-config-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .config-details h4 {
+            font-size: 0.9rem;
+            color: #E0E0E0;
+            margin-bottom: 2px;
+        }
+
+        .config-details p {
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        /* SVG Icon Base Styling */
+        .svg-icon {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-area">
+            <svg class="logo-icon" viewBox="0 0 24 24">
+                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 6c1.4 0 2.5 1.1 2.5 2.5S13.4 12 12 12s-2.5-1.1-2.5-2.5S10.6 7 12 7zm0 13.93c-2.92-.72-5.18-3.41-5.83-6.93.9-.45 2.15-.83 3.83-.93.5.73 1.34 1.23 2.31 1.23s1.81-.5 2.31-1.23c1.68.1 2.93.48 3.83.93-.65 3.52-2.91 6.21-5.83 6.93z"/>
+            </svg>
+            <div class="logo-text">AEGIS<span>MAIL</span></div>
+        </div>
+        <div class="system-status">
+            <div class="status-indicator">
+                <span class="pulse-dot"></span>
+                <span>P2P CORE: ONLINE</span>
+            </div>
+            <div style="color: var(--cyber-blue)">BLOCK: #4,821,902</div>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <nav>
+            <button class="btn-compose" onclick="switchView('compose-view')">COMPILE ENVELOPE</button>
+            
+            <div class="nav-item active" onclick="switchView('inbox-view')">
+                <div class="nav-label">
+                    <svg class="nav-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 12h-4c0 1.66-1.35 3-3 3s-3-1.34-3-3H5V5h14v10z"/></svg>
+                    <span>Inbox</span>
+                </div>
+                <span class="nav-badge" id="inbox-count">2</span>
+            </div>
+
+            <div class="nav-item" onclick="switchView('sent-view')">
+                <div class="nav-label">
+                    <svg class="nav-icon" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                    <span>Sent Vault</span>
+                </div>
+            </div>
+
+            <div class="nav-item" onclick="switchView('network-view')">
+                <div class="nav-label">
+                    <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 12 10 12-4.48 12-12S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.53c-.26-.81-1-1.4-1.9-1.4h-1v-3c0-.55-.45-1-1-1h-6v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                    <span>P2P Network</span>
+                </div>
+            </div>
+
+            <div class="nav-item" onclick="switchView('security-view')">
+                <div class="nav-label">
+                    <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-1 11H7V9h4V7h2v2h4v3h-4v2h4v3h-4v2h-2v-2H7v-3h4v-2z"/></svg>
+                    <span>Security Center</span>
+                </div>
+            </div>
+        </nav>
+
+        <main>
+            <div id="inbox-view" class="view-panel active split-layout">
+                <div class="list-pane">
+                    <div class="pane-header">
+                        <span>INCOMING ENVELOPES</span>
+                    </div>
+                    <div class="search-box">
+                        <input type="text" placeholder="Query Local Encrypted Index...">
+                    </div>
+                    <div class="item-list" id="inbox-list">
+                        </div>
+                </div>
+                <div class="content-pane" id="message-detail-pane">
+                    <div style="margin: auto; text-align: center; color: #555; font-family: var(--font-mono)">
+                        <p>NO DECRYPTED SPECIMEN LOADED</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="compose-view" class="view-panel">
+                <div class="compose-container">
+                    <div class="compose-header">EXECUTE ENCRYPTED MESSAGE TRANSMISSION</div>
+                    <div class="form-group">
+                        <label>RECIPIENT DISTRIBUTED IDENTITY (DID)</label>
+                        <input type="text" id="compose-to" placeholder="did:aegis:z6MkpTHR8VNsBxqnH48Z5mS...">
+                    </div>
+                    <div class="form-group">
+                        <label>SUBJECT WRAPPER (END-TO-END ENCRYPTED)</label>
+                        <input type="text" id="compose-subject" placeholder="Enter secure subject...">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>PAYLOAD CONTENT</label>
+                        <textarea id="compose-body" style="flex: 1; resize: none;" placeholder="Write raw textual context here..."></textarea>
+                    </div>
+                    <div class="compose-actions">
+                        <button class="btn-action btn-primary" onclick="executeMessageRouting()">SIGN & DISPATCH</button>
+                        <button class="btn-action btn-secondary" onclick="switchView('inbox-view')">ABORT</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="network-view" class="view-panel grid-dashboard">
+                <div class="dashboard-card">
+                    <div class="card-title">SWARM TOPOLOGY STATUS</div>
+                    <div class="metric-value" id="net-peers">742</div>
+                    <div class="metric-sub">Active validated peers connected globally via Kademlia DHT Sharding.</div>
+                </div>
+                <div class="dashboard-card">
+                    <div class="card-title">REPUTATION & VALIDATION QUORUM</div>
+                    <div class="metric-value">99.4%</div>
+                    <div class="metric-sub">Network health check consensus parameter threshold.</div>
+                </div>
+                <div class="dashboard-card" style="grid-column: span 2;">
+                    <div class="card-title">NODE STREAM INTEGRITY CONSOLE</div>
+                    <div class="log-terminal" id="network-logs">
+                        </div>
+                </div>
+            </div>
+
+            <div id="security-view" class="view-panel grid-dashboard">
+                <div class="dashboard-card" style="grid-column: span 2;">
+                    <div class="card-title">LOCAL CRYPTOGRAPHIC KEY VAULT</div>
+                    <div class="security-config-row">
+                        <div class="config-details">
+                            <h4>Quantum KEM Parameters</h4>
+                            <p>Kyber-1024 Level-5 Post-Quantum Key Exchange Matrix</p>
+                        </div>
+                        <div style="font-family: var(--font-mono); font-size:0.85rem; color: var(--cyber-blue)">ACTIVE</div>
+                    </div>
+                    <div class="security-config-row">
+                        <div class="config-details">
+                            <h4>Dual Signing Engine</h4>
+                            <p>Ed25519 Curve + SPHINCS+ State-free signatures</p>
+                        </div>
+                        <div style="font-family: var(--font-mono); font-size:0.85rem; color: var(--cyber-blue)">ENFORCED</div>
+                    </div>
+                </div>
+                <div class="dashboard-card">
+                    <div class="card-title">AI HEURISTIC THREAT INSPECTOR</div>
+                    <div style="font-size: 0.9rem; color: var(--neon-green); font-family: var(--font-mono); margin-bottom: 10px;">
+                        POLICIES: OPTIMAL
+                    </div>
+                    <p style="font-size:0.8rem; color:#888; line-height: 1.4;">
+                        Zero anomaly flags generated within the past 48 structural message receipts. External scanning components operational.
+                    </p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Production Local Cache Mock Emulating Decrypted State Store
+        const localEncryptedDatabase = [
+            {
+                id: "msg-8f92a1c0",
+                sender: "did:aegis:z6MkgTf89V2B...",
+                subject: "[DIRECTIVE] Quantum Transition Migration Phase II",
+                time: "10:42 UTC",
+                body: "Team, implementation of the ML-KEM and SPHINCS+ hybrid cryptographic layer across regional validation routing nodes must reach completion before target window block height #4,900,000.\n\nAll structural logs indicate performance optimization is complete.",
+                crypto: "Kyber-1024 + X25519 Hybrid // AES-256-GCM Shard",
+                threatScore: 0.01
+            },
+            {
+                id: "msg-3e11b49f",
+                sender: "did:aegis:z6MkpTHR8VNs...",
+                subject: "Security Audit Framework Update Vector",
+                time: "06:14 UTC",
+                body: "The localized anomaly engine processed network ingress packets. No fingerprint deviations were established. Perfect Forward Secrecy parameters successfully rotated dynamically across memory structures.",
+                crypto: "Kyber-1024 + X25519 Hybrid // AES-256-GCM Shard",
+                threatScore: 0.04
+            }
+        ];
+
+        function renderInboxList() {
+            const listEl = document.getElementById('inbox-list');
+            listEl.innerHTML = '';
+            localEncryptedDatabase.forEach((mail, idx) => {
+                const item = document.createElement('div');
+                item.className = `mail-item ${idx === 0 ? 'selected' : ''}`;
+                item.onclick = () => selectMail(mail.id, item);
+                
+                item.innerHTML = `
+                    <div class="mail-top">
+                        <div class="mail-sender">${mail.sender}</div>
+                        <div class="mail-time">${mail.time}</div>
+                    </div>
+                    <div class="mail-subject">${mail.subject}</div>
+                    <div class="mail-preview">${mail.body.substring(0, 60)}...</div>
+                `;
+                listEl.appendChild(item);
+            });
+            // Auto load first message state
+            if(localEncryptedDatabase.length > 0) {
+                renderMessageView(localEncryptedDatabase[0]);
+            }
+        }
+
+        function selectMail(id, element) {
+            document.querySelectorAll('.mail-item').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            const data = localEncryptedDatabase.find(m => m.id === id);
+            renderMessageView(data);
+        }
+
+        function renderMessageView(mail) {
+            const pane = document.getElementById('message-detail-pane');
+            pane.innerHTML = `
+                <div class="content-header">
+                    <h2 class="message-title">${mail.subject}</h2>
+                    <div class="meta-grid">
+                        <div class="meta-label">SENDER DID:</div>
+                        <div class="meta-value">${mail.sender}</div>
+                        <div class="meta-label">TIMESTAMP:</div>
+                        <div class="meta-value">${mail.time} (Network Confirmed)</div>
+                    </div>
+                    <div class="crypto-analysis-card">
+                        <div class="crypto-info-left">
+                            <svg style="width:20px; height:20px; fill:var(--neon-green);" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 12 10 12-4.48 12-12S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                            </svg>
+                            <div>
+                                <div class="crypto-status-text">DECRYPTED METADATA VALIDATED</div>
+                                <div class="crypto-tech-stack">Algorithm: ${mail.crypto}</div>
+                            </div>
+                        </div>
+                        <div style="color: var(--neon-green); font-family: var(--font-mono); font-size: 0.8rem;">
+                            AI Threat Index: ${(mail.threatScore * 100).toFixed(2)}%
+                        </div>
+                    </div>
+                </div>
+                <div class="message-body">${mail.body}</div>
+            `;
+        }
+
+        function switchView(viewId) {
+            document.querySelectorAll('.view-panel').forEach(panel => panel.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            
+            document.getElementById(viewId).classList.add('active');
+            
+            // Highlight correlation navigation element
+            const matchBtn = Array.from(document.querySelectorAll('.nav-item')).find(item => 
+                item.onclick.toString().includes(viewId)
+            );
+            if(matchBtn) matchBtn.classList.add('active');
+        }
+
+        function executeMessageRouting() {
+            const toInput = document.getElementById('compose-to').value;
+            const subjectInput = document.getElementById('compose-subject').value;
+            const bodyInput = document.getElementById('compose-body').value;
+
+            if(!toInput || !subjectInput || !bodyInput) {
+                alert("Cryptographic Failure: Form input requirements incomplete.");
+                return;
+            }
+
+            // Simulating real-time local hybrid generation runtime compilation
+            const simulatedNewMessage = {
+                id: `msg-${Math.random().toString(16).substr(2, 8)}`,
+                sender: "did:aegis:z6MownLocalIdentityEngineAnchor...",
+                subject: subjectInput,
+                time: "Just Now",
+                body: bodyInput,
+                crypto: "Kyber-1024 + X25519 Hybrid // AES-256-GCM Shard",
+                threatScore: 0.01
+            };
+
+            localEncryptedDatabase.unshift(simulatedNewMessage);
+            renderInboxList();
+            
+            // Clear entry inputs
+            document.getElementById('compose-to').value = '';
+            document.getElementById('compose-subject').value = '';
+            document.getElementById('compose-body').value = '';
+
+            switchView('inbox-view');
+        }
+
+        // Network Activity Telemetry Log Simulation Output Runtime
+        function runTerminalSimulation() {
+            const logPanel = document.getElementById('network-logs');
+            const events = [
+                { type: 'info', text: "Initializing mixnet circuit hop abstraction vectors..." },
+                { type: 'success', text: "Cryptographic consensus verified on block height delta allocation state." },
+                { type: 'info', text: "Routing entropy packet layer obfuscation parameters to 4 external channels." },
+                { type: 'warn', text: "Ingress connection anomaly detected at node hash ::3ee2 - drop applied." }
+            ];
+
+            setInterval(() => {
+                if(!logPanel) return;
+                const pick = events[Math.floor(Math.random() * events.length)];
+                const timestamp = new Date().toISOString().slice(11, 19);
+                const entry = document.createElement('div');
+                entry.className = `log-entry ${pick.type}`;
+                entry.innerText = `[${timestamp}] ${pick.text}`;
+                logPanel.appendChild(entry);
+                logPanel.scrollTop = logPanel.scrollHeight;
+                
+                // Keep element container small
+                if(logPanel.childNodes.length > 40) logPanel.removeChild(logPanel.firstChild);
+            }, 3500);
+        }
+
+        // Core App Entry Initiation
+        window.onload = () => {
+            renderInboxList();
+            runTerminalSimulation();
+        };
+    </script>
+</body>
+</html>

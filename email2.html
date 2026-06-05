@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>AegisMail System Suite & Specification Terminal</title>
+	<style>
+		:root {
+			--bg-black: #0A0A0A;
+			--cyber-blue: #00D4FF;
+			--neon-green: #00FF88;
+			--security-red: #FF4D4D;
+			--graphite: #1E1E1E;
+			--panel-bg: rgba(30, 30, 30, 0.7);
+			--border-glass: rgba(0, 212, 255, 0.15);
+			--font-mono: 'Courier New', Courier, monospace;
+		}
+
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+		}
+
+		body {
+			background-color: var(--bg-black);
+			color: #E0E0E0;
+			overflow: hidden;
+			height: 100vh;
+			display: flex;
+			flex-direction: column;
+		}
+
+		/* Tech Mesh Grid Overlay */
+		body::before {
+			content: "";
+			position: absolute;
+			top: 0; left: 0; width: 100%; height: 100%;
+			background-image: linear-gradient(rgba(0, 212, 255, 0.02) 1px, transparent 1px),
+							  linear-gradient(90deg, rgba(0, 212, 255, 0.02) 1px, transparent 1px);
+			background-size: 25px 25px;
+			pointer-events: none;
+			z-index: 0;
+		}
+
+		header {
+			z-index: 10;
+			background: rgba(10, 10, 10, 0.9);
+			border-bottom: 1px solid var(--cyber-blue);
+			padding: 15px 30px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			backdrop-filter: blur(10px);
+		}
+
+		.logo-area {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+		}
+
+		.logo-icon {
+			width: 26px;
+			height: 26px;
+			fill: var(--cyber-blue);
+			filter: drop-shadow(0 0 8px var(--cyber-blue));
+		}
+
+		.logo-text {
+			font-family: var(--font-mono);
+			font-weight: bold;
+			font-size: 1.3rem;
+			letter-spacing: 2px;
+			color: #FFF;
+		}
+
+		.logo-text span {
+			color: var(--cyber-blue);
+		}
+
+		.system-status {
+			display: flex;
+			align-items: center;
+			gap: 20px;
+			font-family: var(--font-mono);
+			font-size: 0.85rem;
+		}
+
+		.status-indicator {
+			display: flex;
+			align-items: center;
+			gap: 6px;
+		}
+
+		.pulse-dot {
+			width: 8px;
+			height: 8px;
+			background-color: var(--neon-green);
+			border-radius: 50%;
+			box-shadow: 0 0 10px var(--neon-green);
+			animation: pulse 1.8s infinite;
+		}
+
+		@keyframes pulse {
+			0% { transform: scale(0.9); opacity: 0.6; }
+			50% { transform: scale(1.2); opacity: 1; }
+			100% { transform: scale(0.9); opacity: 0.6; }
+		}
+
+		.app-container {
+			display: flex;
+			flex: 1;
+			z-index: 1;
+			overflow: hidden;
+			position: relative;
+		}
+
+		nav {
+			width: 260px;
+			background: rgba(15, 15, 15, 0.85);
+			border-right: 1px solid rgba(255, 255, 255, 0.05);
+			padding: 20px 15px;
+			display: flex;
+			flex-direction: column;
+			gap: 6px;
+		}
+
+		.nav-section-title {
+			font-family: var(--font-mono);
+			font-size: 0.75rem;
+			color: #555;
+			text-transform: uppercase;
+			letter-spacing: 1px;
+			margin: 15px 0 5px 5px;
+		}
+
+		.btn-compose {
+			background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(0, 255, 136, 0.15));
+			border: 1px solid var(--cyber-blue);
+			color: #FFF;
+			padding: 12px;
+			border-radius: 4px;
+			cursor: pointer;
+			font-weight: bold;
+			font-family: var(--font-mono);
+			letter-spacing: 1px;
+			margin-bottom: 10px;
+			transition: all 0.3s ease;
+			text-shadow: 0 0 5px var(--cyber-blue);
+		}
+
+		.btn-compose:hover {
+			background: linear-gradient(135deg, rgba(0, 212, 255, 0.35), rgba(0, 255, 136, 0.35));
+			box-shadow: 0 0 15px rgba(0, 212, 255, 0.25);
+		}
+
+		.nav-item {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 10px 12px;
+			color: #A0A0A0;
+			border-radius: 4px;
+			cursor: pointer;
+			transition: all 0.2s ease;
+			font-size: 0.9rem;
+		}
+
+		.nav-item:hover, .nav-item.active {
+			background: rgba(0, 212, 255, 0.08);
+			color: var(--cyber-blue);
+			border-left: 3px solid var(--cyber-blue);
+		}
+
+		.nav-label {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+		}
+
+		.nav-icon {
+			width: 18px;
+			height: 18px;
+			fill: currentColor;
+		}
+
+		.nav-badge {
+			font-family: var(--font-mono);
+			font-size: 0.75rem;
+			background: rgba(0, 212, 255, 0.12);
+			padding: 2px 6px;
+			border-radius: 10px;
+			color: var(--cyber-blue);
+			border: 1px solid rgba(0, 212, 255, 0.25);
+		}
+
+		main {
+			flex: 1;
+			background: rgba(10, 10, 10, 0.3);
+			backdrop-filter: blur(4px);
+			overflow: hidden;
+			position: relative;
+		}
+
+		.view-panel {
+			display: none;
+			width: 100%;
+			height: 100%;
+		}
+
+		.view-panel.active {
+			display: flex;
+		}
+
+		/* Split Layout Design */
+		.split-layout {
+			width: 100%;
+			height: 100%;
+			display: flex;
+		}
+
+		.list-pane {
+			width: 380px;
+			border-right: 1px solid rgba(255, 255, 255, 0.05);
+			display: flex;
+			flex-direction: column;
+			background: rgba(15, 15, 15, 0.6);
+		}
+
+		.pane-header {
+			padding: 20px;
+			border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+			font-family: var(--font-mono);
+			font-size: 1rem;
+			color: #FFF;
+			letter-spacing: 1px;
+		}
+
+		.search-box {
+			padding: 10px 20px;
+			border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+		}
+
+		.search-box input {
+			width: 100%;
+			background: rgba(0, 0, 0, 0.6);
+			border: 1px solid rgba(255, 255, 255, 0.1);
+			padding: 8px 12px;
+			border-radius: 4px;
+			color: #FFF;
+			font-size: 0.85rem;
+		}
+
+		.search-box input:focus {
+			outline: none;
+			border-color: var(--cyber-blue);
+		}
+
+		.item-list {
+			flex: 1;
+			overflow-y: auto;
+		}
+
+		.mail-item {
+			padding: 15px 20px;
+			border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+			cursor: pointer;
+			transition: all 0.2s ease;
+		}
+
+		.mail-item:hover {
+			background: rgba(255, 255, 255, 0.02);
+		}
+
+		.mail-item.selected {
+			background: rgba(0, 212, 255, 0.05);
+			border-left: 3px solid var(--cyber-blue);
+		}
+
+		.mail-top {
+			display: flex;
+			justify-content: space-between;
+			margin-bottom: 6px;
+		}
+
+		.mail-sender {
+			font-weight: 600;
+			font-size: 0.85rem;
+			color: #FFF;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			width: 70%;
+			font-family: var(--font-mono);
+		}
+
+		.mail-time {
+			font-family: var(--font-mono);
+			font-size: 0.75rem;
+			color: #666;
+		}
+
+		.mail-subject {
+			font-size: 0.85rem;
+			color: var(--cyber-blue);
+			margin-bottom: 4px;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		.mail-preview {
+			font-size: 0.8rem;
+			color: #888;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		.content-pane {
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+			background: rgba(10, 10, 10, 0.2);
+			overflow-y: auto;
+		}
+
+		.content-header {
+			padding: 25px;
+			border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+			background: rgba(20, 20, 20, 0.5);
+		}
+
+		.message-title {
+			font-size: 1.3rem;
+			color: #FFF;
+			margin-bottom: 12px;
+		}
+
+		.meta-grid {
+			display: grid;
+			grid-template-columns: auto 1fr;
+			gap: 8px 15px;
+			font-size: 0.85rem;
+		}
+
+		.meta-label {
+			color: #666;
+			font-family: var(--font-mono);
+		}
+
+		.meta-value {
+			color: #AAA;
+			font-family: var(--font-mono);
+			word-break: break-all;
+		}
+
+		.crypto-analysis-card {
+			margin-top: 15px;
+			background: rgba(0, 255, 136, 0.03);
+			border: 1px solid rgba(0, 255, 136, 0.15);
+			border-radius: 4px;
+			padding: 12px 15px;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+		}
+
+		.crypto-info-left {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+		}
+
+		.crypto-status-text {
+			font-size: 0.85rem;
+			color: var(--neon-green);
+			font-family: var(--font-mono);
+			font-weight: bold;
+		}
+
+		.crypto-tech-stack {
+			font-size: 0.75rem;
+			color: #888;
+			margin-top: 2px;
+		}
+
+		.message-body {
+			padding: 30px;
+			color: #D5D5D5;
+			font-size: 0.95rem;
+			line-height: 1.6;
+			flex: 1;
+			white-space: pre-wrap;
+		}
+
+		/* Compose UI Layout */
+		.compose-container {
+			width: 100%;
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+			padding: 30px;
+			background: rgba(12, 12, 12, 0.95);
+		}
+
+		.compose-header {
+			font-family: var(--font-mono);
+			color: #FFF;
+			font-size: 1.2rem;
+			margin-bottom: 20px;
+			border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+			padding-bottom: 10px;
+			letter-spacing: 1px;
+		}
+
+		.form-group {
+			margin-bottom: 15px;
+			display: flex;
+			flex-direction: column;
+			gap: 6px;
+		}
+
+		.form-group label {
+			font-family: var(--font-mono);
+			font-size: 0.8rem;
+			color: var(--cyber-blue);
+		}
+
+		.form-group input, .form-group textarea {
+			background: rgba(30, 30, 30, 0.5);
+			border: 1px solid rgba(255, 255, 255, 0.1);
+			border-radius: 4px;
+			padding: 10px;
+			color: #FFF;
+			font-size: 0.9rem;
+		}
+
+		.form-group input:focus, .form-group textarea:focus {
+			outline: none;
+			border-color: var(--cyber-blue);
+			box-shadow: 0 0 8px rgba(0, 212, 255, 0.2);
+		}
+
+		.compose-actions {
+			margin-top: 15px;
+			display: flex;
+			gap: 15px;
+		}
+
+		.btn-action {
+			padding: 10px 24px;
+			border-radius: 4px;
+			cursor: pointer;
+			font-family: var(--font-mono);
+			font-weight: bold;
+			font-size: 0.9rem;
+			transition: all 0.2s ease;
+		}
+
+		.btn-primary {
+			background: var(--cyber-blue);
+			border: 1px solid var(--cyber-blue);
+			color: #000;
+		}
+
+		.btn-primary:hover {
+			box-shadow: 0 0 15px var(--cyber-blue);
+			background: #00bfe6;
+		}
+
+		.btn-secondary {
+			background: transparent;
+			border: 1px solid rgba(255, 255, 255, 0.2);
+			color: #FFF;
+		}
+
+		/* Documentation & Dashboard Components */
+		.doc-container {
+			width: 100%;
+			height: 100%;
+			padding: 30px;
+			overflow-y: auto;
+			background: rgba(15, 15, 15, 0.6);
+		}
+
+		.doc-scroll {
+			max-width: 1000px;
+			margin: 0 auto;
+			line-height: 1.6;
+		}
+
+		.doc-section {
+			margin-bottom: 40px;
+			background: var(--panel-bg);
+			border: 1px solid var(--border-glass);
+			border-radius: 6px;
+			padding: 25px;
+		}
+
+		.doc-title {
+			font-family: var(--font-mono);
+			color: #FFF;
+			font-size: 1.4rem;
+			margin-bottom: 20px;
+			border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+			padding-bottom: 8px;
+			display: flex;
+			align-items: center;
+			gap: 10px;
+		}
+
+		.doc-title span {
+			color: var(--cyber-blue);
+		}
+
+		.doc-text {
+			color: #CCCCCC;
+			font-size: 0.95rem;
+			margin-bottom: 15px;
+		}
+
+		h3.doc-sub {
+			font-family: var(--font-mono);
+			color: var(--cyber-blue);
+			font-size: 1.1rem;
+			margin: 20px 0 10px 0;
+		}
+
+		pre {
+			background: #050505;
+			border: 1px solid #222;
+			padding: 15px;
+			border-radius: 4px;
+			overflow-x: auto;
+			margin: 15px 0;
+		}
+
+		code {
+			font-family: var(--font-mono);
+			font-size: 0.85rem;
+			color: var(--neon-green);
+		}
+
+		/* System Tables style */
+		.spec-table {
+			width: 100%;
+			border-collapse: collapse;
+			margin: 15px 0;
+			font-size: 0.85rem;
+		}
+
+		.spec-table th, .spec-table td {
+			border: 1px solid rgba(255, 255, 255, 0.08);
+			padding: 10px 12px;
+			text-align: left;
+		}
+
+		.spec-table th {
+			background: rgba(0, 212, 255, 0.05);
+			color: #FFF;
+			font-family: var(--font-mono);
+		}
+
+		.spec-table tr:nth-child(even) {
+			background: rgba(255, 255, 255, 0.01);
+		}
+
+		/* Grid Framework for Status View dashboards */
+		.grid-dashboard {
+			width: 100%;
+			height: 100%;
+			padding: 30px;
+			overflow-y: auto;
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+			gap: 20px;
+		}
+
+		.dashboard-card {
+			background: var(--panel-bg);
+			border: 1px solid var(--border-glass);
+			border-radius: 6px;
+			padding: 20px;
+			backdrop-filter: blur(12px);
+		}
+
+		.card-title {
+			font-family: var(--font-mono);
+			color: #FFF;
+			font-size: 1rem;
+			margin-bottom: 15px;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+			padding-bottom: 8px;
+		}
+
+		.metric-value {
+			font-size: 2.2rem;
+			font-weight: bold;
+			color: var(--cyber-blue);
+			font-family: var(--font-mono);
+			margin-bottom: 5px;
+		}
+
+		.metric-sub {
+			font-size: 0.75rem;
+			color: #777;
+		}
+
+		.log-terminal {
+			background: #050505;
+			border: 1px solid #1A1A1A;
+			border-radius: 4px;
+			padding: 12px;
+			font-family: var(--font-mono);
+			font-size: 0.75rem;
+			color: #888;
+			height: 180px;
+			overflow-y: auto;
+		}
+
+		.log-entry {
+			margin-bottom: 4px;
+			line-height: 1.4;
+		}
+
+		.log-entry.info { color: var(--cyber-blue); }
+		.log-entry.success { color: var(--neon-green); }
+		.log-entry.warn { color: var(--security-red); }
+
+		.security-config-row {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 12px 0;
+			border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+		}
+
+		.config-details h4 {
+			font-size: 0.9rem;
+			color: #E0E0E0;
+			margin-bottom: 2px;
+		}
+
+		.config-details p {
+			font-size: 0.75rem;
+			color: #666;
+		}
+
+		/* Responsive Flow Adaptation */
+		@media(max-width: 768px) {
+			.app-container { flex-direction: column; }
+			nav { width: 100%; height: auto; display: grid; grid-template-columns: repeat(2, 1fr); }
+			.list-pane { width: 100%; }
+			.split-layout { flex-direction: column; }
+		}
+	</style>
+</head>
+<body>
+
+	<header>
+		<div class="logo-area">
+			<svg class="logo-icon" viewBox="0 0 24 24">
+				<path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 6c1.4 0 2.5 1.1 2.5 2.5S13.4 12 12 12s-2.5-1.1-2.5-2.5S10.6 7 12 7zm0 13.93c-2.92-.72-5.18-3.41-5.83-6.93.9-.45 2.15-.83 3.83-.93.5.73 1.34 1.23 2.31 1.23s1.81-.5 2.31-1.23c1.68.1 2.93.48 3.83.93-.65 3.52-2.91 6.21-5.83 6.93z"/>
+			</svg>
+			<div class="logo-text">AEGIS<span>MAIL</span></div>
+		</div>
+		<div class="system-status">
+			<div class="status-indicator">
+				<span class="pulse-dot"></span>
+				<span>MESH CORE: OPERATIONAL</span>
+			</div>
+			<div style="color: var(--cyber-blue)">SYNC BLOCK: #4,821,902</div>
+		</div>
+	</header>
+
+	<div class="app-container">
+		<nav>
+			<button class="btn-compose" onclick="switchView('compose-view')">COMPILE NEW ENVELOPE</button>
+			
+			<div class="nav-section-title">Secure Messaging</div>
+			<div class="nav-item active" onclick="switchView('inbox-view')">
+				<div class="nav-label">
+					<svg class="nav-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 12h-4c0 1.66-1.35 3-3 3s-3-1.34-3-3H5V5h14v10z"/></svg>
+					<span>Inbox Shards</span>
+				</div>
+				<span class="nav-badge" id="inbox-count">2</span>
+			</div>
+
+			<div class="nav-section-title">System Infrastructure</div>
+			<div class="nav-item" onclick="switchView('network-view')">
+				<div class="nav-label">
+					<svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 12 10 12-4.48 12-12S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.53c-.26-.81-1-1.4-1.9-1.4h-1v-3c0-.55-.45-1-1-1h-6v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+					<span>P2P Telemetry</span>
+				</div>
+			</div>
+
+			<div class="nav-item" onclick="switchView('security-view')">
+				<div class="nav-label">
+					<svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-1 11H7V9h4V7h2v2h4v3h-4v2h4v3h-4v2h-2v-2H7v-3h4v-2z"/></svg>
+					<span>Security Center</span>
+				</div>
+			</div>
+
+			<div class="nav-section-title">Technical Specifications</div>
+			<div class="nav-item" onclick="switchView('doc-architecture-view')">
+				<div class="nav-label">🛠️ Architecture Specs</div>
+			</div>
+			<div class="nav-item" onclick="switchView('doc-schemas-view')">
+				<div class="nav-label">💾 Data Schemas</div>
+			</div>
+			<div class="nav-item" onclick="switchView('doc-contracts-view')">
+				<div class="nav-label">⛓️ Smart Contracts</div>
+			</div>
+			<div class="nav-item" onclick="switchView('doc-threats-view')">
+				<div class="nav-label">🛡️ Threat Matrices</div>
+			</div>
+		</nav>
+
+		<main>
+			<!-- INBOX VIEW PANEL -->
+			<div id="inbox-view" class="view-panel active split-layout">
+				<div class="list-pane">
+					<div class="pane-header">INCOMING SECURE BLOCKS</div>
+					<div class="search-box">
+						<input type="text" placeholder="Query Local Vault Index...">
+					</div>
+					<div class="item-list" id="inbox-list"></div>
+				</div>
+				<div class="content-pane" id="message-detail-pane">
+					<div style="margin: auto; text-align: center; color: #555; font-family: var(--font-mono)">
+						<p>NO PARSED CRYPTOGRAPHIC MATERIAL LOADED</p>
+					</div>
+				</div>
+			</div>
+
+			<!-- COMPOSE VIEW PANEL -->
+			<div id="compose-view" class="view-panel">
+				<div class="compose-container">
+					<div class="compose-header">EXECUTE SECURE OBJECT TRANSMISSION</div>
+					<div class="form-group">
+						<label>RECIPIENT DECENTRALIZED IDENTITY (DID)</label>
+						<input type="text" id="compose-to" placeholder="did:aegis:z6MkpTHR8VNsBxqnH48Z5mS...">
+					</div>
+					<div class="form-group">
+						<label>SUBJECT HEAD (END-TO-END ENCRYPTED)</label>
+						<input type="text" id="compose-subject" placeholder="Enter zero-knowledge header context...">
+					</div>
+					<div class="form-group" style="flex: 1;">
+						<label>PAYLOAD CONTENT CONTENT</label>
+						<textarea id="compose-body" style="flex: 1; resize: none;" placeholder="Write internal plaintext stream context here..."></textarea>
+					</div>
+					<div class="compose-actions">
+						<button class="btn-action btn-primary" onclick="executeMessageRouting()">SIGN & ENVELOPE</button>
+						<button class="btn-action btn-secondary" onclick="switchView('inbox-view')">ABORT</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- P2P TELEMETRY NETWORK VIEW -->
+			<div id="network-view" class="view-panel grid-dashboard">
+				<div class="dashboard-card">
+					<div class="card-title">SWARM TOPOLOGY CONNECTIVITY</div>
+					<div class="metric-value">742</div>
+					<div class="metric-sub">Nodes active in global Kademlia DHT Sharding.</div>
+				</div>
+				<div class="dashboard-card">
+					<div class="card-title">VALIDATION QUORUM THRESHOLD</div>
+					<div class="metric-value">99.42%</div>
+					<div class="metric-sub">Distributed consensus matrix verification status.</div>
+				</div>
+				<div class="dashboard-card" style="grid-column: span 2;">
+					<div class="card-title">ROUTING SWARM LIVE CONSOLE LOGS</div>
+					<div class="log-terminal" id="network-logs"></div>
+				</div>
+			</div>
+
+			<!-- SECURITY CENTER VIEW -->
+			<div id="security-view" class="view-panel grid-dashboard">
+				<div class="dashboard-card" style="grid-column: span 2;">
+					<div class="card-title">LOCAL CRYPTOGRAPHIC PRIMITIVES STATUS</div>
+					<div class="security-config-row">
+						<div class="config-details">
+							<h4>Quantum-Safe KEM Matrix</h4>
+							<p>Kyber-1024 Level-5 Post-Quantum Key Exchange Protocol Wrapper</p>
+						</div>
+						<div style="font-family: var(--font-mono); font-size:0.85rem; color: var(--cyber-blue)">ENFORCED</div>
+					</div>
+					<div class="security-config-row">
+						<div class="config-details">
+							<h4>Dual Signing Engine Array</h4>
+							<p>Ed25519 Curve pairing + SPHINCS+ State-free structural signatures</p>
+						</div>
+						<div style="font-family: var(--font-mono); font-size:0.85rem; color: var(--cyber-blue)">ACTIVE</div>
+					</div>
+				</div>
+				<div class="dashboard-card">
+					<div class="card-title">EDGE AI THREAT EVALUATOR</div>
+					<div style="font-size: 0.9rem; color: var(--neon-green); font-family: var(--font-mono); margin-bottom: 10px;">
+						STATUS: PARANOID
+					</div>
+					<p style="font-size:0.8rem; color:#888; line-height: 1.4;">
+						Zero anomaly flags generated within the past 48 structural ingress message receipts. Local scanning hooks online.
+					</p>
+				</div>
+			</div>
+
+			<!-- TECHNICAL DOCUMENTATION PANELS -->
+			<!-- SECTION 1: ARCHITECTURE -->
+			<div id="doc-architecture-view" class="view-panel doc-container">
+				<div class="doc-scroll">
+					<div class="doc-section">
+						<div class="doc-title"><span>01 //</span> SYSTEM ARCHITECTURE SPECIFICATION</div>
+						<p class="doc-text">AegisMail modifies standard messaging architecture, transitioning transactional models from SMTP/IMAP structures towards an identity-isolated, peer-to-peer (P2P), post-quantum cryptographic object layer anchored on an immutable shared state registry.</p>
+						
+						<h3 class="doc-sub">Topology Overview Diagram</h3>
+						<pre><code>+-----------------------------------------------------------------------------------+
+|                               AEGISMAIL CLIENT (UI)                               |
+|       [WebAssembly Crypto Core] -> [Local IndexedDB (Encrypted Vault)]            |
++-----------------------------------------------------------------------------------+
+										 |  (Local IPC / WebRTC Bindings)
+										 v
++-----------------------------------------------------------------------------------+
+|                            LOCAL HYBRID CRYPTO ENGINE                             |
+|      - X25519 + Kyber-1024 (KEM)              - AES-256-GCM + SPHINCS+            |
++-----------------------------------------------------------------------------------+
+										 |
+			   +-------------------------+-------------------------+
+			   | (Onion Routed / Sphinx Mixnet)                    | (gRPC / TLS 1.3 State Sync)
+			   v                                                   v
++------------------------------------+             +--------------------------------+
+|        P2P ROUTING LAYER           |             |      BLOCKCHAIN IDENTITY       |
+|  - Kademlia DHT Sharded Network    |             |  - EVM / Wasm Decentralized DID|
+|  - Dynamic Traffic Padding         |             |  - Merkle Mountain Range Sync  |
++------------------------------------+             +--------------------------------+
+										 |
+										 v
++-----------------------------------------------------------------------------------+
+|                             DISTRIBUTED STORAGE LAYER                             |
+|       - Content-Addressed Cryptographic Crypt Blobs (IPFS / Arweave)               |
+|       - Zero-Knowledge Reed-Solomon Erasure Coding Fault Recovery                 |
++-----------------------------------------------------------------------------------+</code></pre>
+						
+						<h3 class="doc-sub">Core Architectural Guarantees</h3>
+						<p class="doc-text">1. <b>Hybrid Post-Quantum Security:</b> Combines X25519 Elliptic Curve mechanisms with lattice-based Kyber-1024 parameters, eliminating single points of algorithmic exposure.</p>
+						<p class="doc-text">2. <b>Zero-Knowledge Metadata Layout:</b> Strips routing indices and identities out of structural transfer wrappers using Sphinx Mixnet packet specifications.</p>
+					</div>
+				</div>
+			</div>
+
+			<!-- SECTION 2: DATA SCHEMAS -->
+			<div id="doc-schemas-view" class="view-panel doc-container">
+				<div class="doc-scroll">
+					<div class="doc-section">
+						<div class="doc-title"><span>02 //</span> DATA SCHEMA & STORAGE MATRIX</div>
+						<p class="doc-text">Data state mapping architecture used directly within localized user database structures and gRPC communications streams.</p>
+						
+						<h3 class="doc-sub">SQL Relational Framework (IndexedDB / Node Cache)</h3>
+						<pre><code>-- Decentralized Identity Registry (Anchored on-chain, cached via edge state)
+CREATE TABLE identities (
+	did VARCHAR(255) PRIMARY KEY,
+	public_key_x25519 CHAR(64) NOT NULL,
+	public_key_kyber1024 TEXT NOT NULL,
+	public_signing_sphincs TEXT NOT NULL,
+	revocation_commitment BYTEA NOT NULL,
+	reputation_score INT DEFAULT 100,
+	last_updated_block BIGINT
+);
+
+-- Secure Content Storage Map (Maintained locally within secure vault boundary)
+CREATE TABLE messages (
+	message_id CHAR(64) PRIMARY KEY,
+	conversation_id CHAR(64) NOT NULL,
+	sender_did VARCHAR(255) NOT NULL,
+	recipient_envelope_hash CHAR(64) NOT NULL, -- Blinded destination token
+	encrypted_payload_ipfs_hash CHAR(64) NOT NULL,
+	ephemeral_nonce BYTEA NOT NULL,
+	signature_sphincs TEXT NOT NULL,
+	delivery_timestamp BIGINT NOT NULL,
+	read_status BOOLEAN DEFAULT FALSE,
+	security_verdict_flags INT NOT NULL -- Bitmask flags indicating local AI anomaly metrics
+);</code></pre>
+
+						<h3 class="doc-sub">API Layer Protocol Specification (Proto3 Engine Schema)</h3>
+						<pre><code>syntax = "proto3";
+package aegismail.v1;
+
+service DeliveryNetwork {
+  rpc RouteMessage (EncryptedMessageEnvelope) returns (DeliveryReceipt);
+  rpc SynchronizeState (StateSyncRequest) returns (stream StateSyncDelta);
+  rpc ResolveIdentity (IdentityQuery) returns (IdentityPayload);
+}
+
+message EncryptedMessageEnvelope {
+  string message_id = 1;
+  string target_zone_routing = 2; 
+  bytes ephemeral_kem_ciphertext = 3;
+  bytes encrypted_payload_blob = 4;
+  bytes cryptographic_signature = 5;
+}</code></pre>
+					</div>
+				</div>
+			</div>
+
+			<!-- SECTION 3: SMART CONTRACTS -->
+			<div id="doc-contracts-view" class="view-panel doc-container">
+				<div class="doc-scroll">
+					<div class="doc-section">
+						<div class="doc-title"><span>03 //</span> DECENTRALIZED IDENTITY REGISTRY CONTRACT</div>
+						<p class="doc-text">The smart contract registry acts as a decentralized Public Key Infrastructure (PKI) layer, replacing standard root authorities with absolute mathematical rules.</p>
+						
+						<h3 class="doc-sub">Solidity Implementation Target Profile</h3>
+						<pre><code>// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+contract AegisIdentityRegistry {
+	
+	struct IdentityKeys {
+		bytes32 x25519Key;
+		bytes kyber1024Key;
+		bytes sphincsPublicKey;
+		uint256 blockRegistered;
+		uint32 reputationScore;
+		bool active;
+	}
+
+	mapping(address => string) private _dids;
+	mapping(string => IdentityKeys) private _registry;
+	mapping(string => bytes32) private _revocationHashes;
+
+	event IdentityRegistered(string indexed did, address indexed controller);
+	event IdentityRevoked(string indexed did);
+
+	function registerIdentity(
+		string calldata did, 
+		bytes32 x25519Key, 
+		bytes calldata kyberKey, 
+		bytes calldata sphincsKey,
+		bytes32 revocationCommitment
+	) external {
+		require(_registry[did].blockRegistered == 0, "Identity already declared.");
+		_registry[did] = IdentityKeys({
+			x25519Key: x25519Key,
+			kyber1024Key: kyberKey,
+			sphincsPublicKey: sphincsKey,
+			blockRegistered: block.number,
+			reputationScore: 100,
+			active: true
+		});
+		_dids[msg.sender] = did;
+		_revocationHashes[did] = revocationCommitment;
+	}
+
+	function revokeIdentity(string calldata did, bytes32 proofPreimage) external {
+		require(keccak256(abi.encodePacked(proofPreimage)) == _revocationHashes[did], "Invalid credentials.");
+		_registry[did].active = false;
+	}
+}</code></pre>
+					</div>
+				</div>
+			</div>
+
+			<!-- SECTION 4: THREAT MATRICES & STRIDE -->
+			<div id="doc-threats-view" class="view-panel doc-container">
+				<div class="doc-scroll">
+					<div class="doc-section">
+						<div class="doc-title"><span>04 //</span> THREAT ANALYSIS & SECURITY PROFILE</div>
+						<p class="doc-text">Comprehensive validation map structured directly under global STRIDE engineering methodologies.</p>
+						
+						<table class="spec-table">
+							<thead>
+								<tr>
+									<th>Threat Category</th>
+									<th>Specific Attack Vector</th>
+									<th>System Countermeasure Strategy</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td><b>Spoofing</b></td>
+									<td>Adversary mimics an identity to hijack secure operations.</td>
+									<td>Strict anchoring of DIDs on-chain verified through SPHINCS+ signatures inside the client vault.</td>
+								</tr>
+								<tr>
+									<td><b>Tampering</b></td>
+									<td>Rogue nodes altering message streams mid-transit.</td>
+									<td>Cryptographic identification of immutable content hashes verified natively by the client engine.</td>
+								</tr>
+								<tr>
+									<td><b>Information Leak</b></td>
+									<td>Traffic harvesting to track relational interaction grids.</td>
+									<td>Sphinx Mixnet packaging architecture strips metadata headers out of physical parameters.</td>
+								</tr>
+								<tr>
+									<td><b>Sybil Attacks</b></td>
+									<td>Flooding routing queues with mock operations.</td>
+									<td>Proof-of-Useful-Work validation mechanics bound directly to identity reputational matrices.</td>
+								</tr>
+							</tbody>
+						</table>
+
+						<h3 class="doc-sub">20-Year Evolution Roadmap (2026–2046)</h3>
+						<p class="doc-text"><b>Years 1–5:</b> Baseline post-quantum ingestion rollout. Drop legacy RSA/ECC dependencies from system cores.</p>
+						<p class="doc-text"><b>Years 5–10:</b> Integrate fully homomorphic encryption (FHE) models, scanning for operational threats inside node storage structures without data decryption exposure.</p>
+						<p class="doc-text"><b>Years 10–20:</b> Transition base networks to Content-Centric Topologies (Named Data Networking), entirely bypassing central IP tracking.</p>
+					</div>
+				</div>
+			</div>
+		</main>
+	</div>
+
+	<script>
+		// Data engine cache defining base operational systems
+		const localEncryptedDatabase = [
+			{
+				id: "msg-8f92a1c0",
+				sender: "did:aegis:z6MkgTf89V2B...",
+				subject: "[DIRECTIVE] Quantum Transition Migration Phase II",
+				time: "10:42 UTC",
+				body: "Team, implementation of the ML-KEM and SPHINCS+ hybrid cryptographic layer across regional validation routing nodes must reach completion before target window block height #4,900,000.\n\nAll structural logs indicate performance optimization is complete.",
+				crypto: "Kyber-1024 + X25519 Hybrid Matrix // AES-256-GCM Secure Shard",
+				threatScore: 0.01
+			},
+			{
+				id: "msg-3e11b49f",
+				sender: "did:aegis:z6MkpTHR8VNs...",
+				subject: "Security Audit Framework Update Vector",
+				time: "06:14 UTC",
+				body: "The localized anomaly engine processed network ingress packets. No fingerprint deviations were established. Perfect Forward Secrecy parameters successfully rotated dynamically across memory structures.",
+				crypto: "Kyber-1024 + X25519 Hybrid Matrix // AES-256-GCM Secure Shard",
+				threatScore: 0.04
+			}
+		];
+
+		function renderInboxList() {
+			const listEl = document.getElementById('inbox-list');
+			if(!listEl) return;
+			listEl.innerHTML = '';
+			localEncryptedDatabase.forEach((mail, idx) => {
+				const item = document.createElement('div');
+				item.className = `mail-item ${idx === 0 ? 'selected' : ''}`;
+				item.onclick = () => selectMail(mail.id, item);
+				
+				item.innerHTML = `
+					<div class="mail-top">
+						<div class="mail-sender">${mail.sender}</div>
+						<div class="mail-time">${mail.time}</div>
+					</div>
+					<div class="mail-subject">${mail.subject}</div>
+					<div class="mail-preview">${mail.body.substring(0, 50)}...</div>
+				`;
+				listEl.appendChild(item);
+			});
+			if(localEncryptedDatabase.length > 0) {
+				renderMessageView(localEncryptedDatabase[0]);
+			}
+		}
+
+		function selectMail(id, element) {
+			document.querySelectorAll('.mail-item').forEach(el => el.classList.remove('selected'));
+			element.classList.add('selected');
+			const data = localEncryptedDatabase.find(m => m.id === id);
+			renderMessageView(data);
+		}
+
+		function renderMessageView(mail) {
+			const pane = document.getElementById('message-detail-pane');
+			if(!pane) return;
+			pane.innerHTML = `
+				<div class="content-header">
+					<h2 class="message-title">${mail.subject}</h2>
+					<div class="meta-grid">
+						<div class="meta-label">SENDER DID:</div>
+						<div class="meta-value">${mail.sender}</div>
+						<div class="meta-label">TIMESTAMP:</div>
+						<div class="meta-value">${mail.time} (Mesh Verified Block Height)</div>
+					</div>
+					<div class="crypto-analysis-card">
+						<div class="crypto-info-left">
+							<div class="crypto-status-text">✓ DECRYPTED OBJECT INTEGRITY ASSURED</div>
+							<div class="crypto-tech-stack">Algorithm Layout: ${mail.crypto}</div>
+						</div>
+						<div style="color: var(--neon-green); font-family: var(--font-mono); font-size: 0.8rem;">
+							Anomaly Index: ${(mail.threatScore * 100).toFixed(2)}%
+						</div>
+					</div>
+				</div>
+				<div class="message-body">${mail.body}</div>
+			`;
+		}
+
+		function switchView(viewId) {
+			document.querySelectorAll('.view-panel').forEach(panel => panel.classList.remove('active'));
+			document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+			
+			const target = document.getElementById(viewId);
+			if(target) target.classList.add('active');
+			
+			const matchBtn = Array.from(document.querySelectorAll('.nav-item')).find(item => 
+				item.onclick.toString().includes(viewId)
+			);
+			if(matchBtn) matchBtn.classList.add('active');
+		}
+
+		function executeMessageRouting() {
+			const toInput = document.getElementById('compose-to').value;
+			const subjectInput = document.getElementById('compose-subject').value;
+			const bodyInput = document.getElementById('compose-body').value;
+
+			if(!toInput || !subjectInput || !bodyInput) {
+				alert("Cryptographic Failure: Core parameters incomplete.");
+				return;
+			}
+
+			const simulatedNewMessage = {
+				id: `msg-${Math.random().toString(16).substr(2, 8)}`,
+				sender: "did:aegis:z6MownLocalIdentityEngineAnchor...",
+				subject: subjectInput,
+				time: "Just Now",
+				body: bodyInput,
+				crypto: "Kyber-1024 + X25519 Hybrid Matrix // AES-256-GCM Secure Shard",
+				threatScore: 0.02
+			};
+
+			localEncryptedDatabase.unshift(simulatedNewMessage);
+			renderInboxList();
+			
+			document.getElementById('compose-to').value = '';
+			document.getElementById('compose-subject').value = '';
+			document.getElementById('compose-body').value = '';
+
+			switchView('inbox-view');
+		}
+
+		function runTerminalSimulation() {
+			const logPanel = document.getElementById('network-logs');
+			const events = [
+				{ type: 'info', text: "Initializing mixnet circuit hop abstraction vectors..." },
+				{ type: 'success', text: "Cryptographic consensus verified on block height delta allocation state." },
+				{ type: 'info', text: "Routing entropy packet layer obfuscation parameters to 4 external channels." },
+				{ type: 'warn', text: "Ingress connection anomaly detected at node hash ::3ee2 - drop applied." }
+			];
+
+			setInterval(() => {
+				if(!logPanel) return;
+				const pick = events[Math.floor(Math.random() * events.length)];
+				const timestamp = new Date().toISOString().slice(11, 19);
+				const entry = document.createElement('div');
+				entry.className = `log-entry ${pick.type}`;
+				entry.innerText = `[${timestamp}] ${pick.text}`;
+				logPanel.appendChild(entry);
+				logPanel.scrollTop = logPanel.scrollHeight;
+				
+				if(logPanel.childNodes.length > 30) logPanel.removeChild(logPanel.firstChild);
+			}, 3000);
+		}
+
+		window.onload = () => {
+			renderInboxList();
+			runTerminalSimulation();
+		};
+	</script>
+</body>
+</html>
